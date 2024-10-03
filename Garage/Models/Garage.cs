@@ -11,6 +11,7 @@ namespace Garage.Models
 {
     public class Garage<T>: IEnumerable<T> where T : Vehicle
     {
+
         private T[] vehicles;
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace Garage.Models
         /// <summary>
         /// Adds a vehicle to the garage unless the vehicle is stored there already or the garage doesn't have any more space
         /// </summary>
-        /// <param name="vehicle">The vehicle to be attempted to be stored in teh garage</param>
+        /// <param name="vehicle">The vehicle to be attempted to be stored in the garage</param>
         /// <returns>Returns true if the car was stored, returns false if not.</returns>
         public bool Add(T vehicle)
         {
@@ -74,6 +75,21 @@ namespace Garage.Models
                 }
             }
 
+            return false;
+        }
+
+        /// <summary>
+        /// Removes a vehicle from the garage. Checks if the vehicle is in the garage first
+        /// </summary>
+        /// <param name="vehicle">The vehicle to be attempted to be removed from the garage</param>
+        /// <returns>Returns true if the car was removed, returns false if not.</returns>
+        public bool Remove(T vehicle)
+        {
+            if(vehicles.Contains(vehicle))
+            {
+                vehicle = null;
+                return true;
+            }
             return false;
         }
 

@@ -19,16 +19,15 @@ namespace Garage.Models
     }
     public abstract class Vehicle
     {
-        public int Passengers { get; set; }
-        public int MaxPassengers { get; set; }
-        public int RegistrationNumber { get; set; }
+        public int RegistrationNumber { get; set; } = 999;
         public Colour Colour { get; set; }
+        public int Wheels { get; set; }
 
 
 
         public override string ToString()
         {
-            return $"Registration number: {RegistrationNumber}, Passengers: {Passengers}/{MaxPassengers}, Colour: {Colour}";
+            return $"Registration number: {RegistrationNumber}, Wheels: {Wheels}, Colour: {Colour}";
         }
     }
 }

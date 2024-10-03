@@ -1,5 +1,7 @@
-﻿using Garage.Models;
+﻿using Garage.Handlers;
+using Garage.Models;
 using Garage.Models.Vehicles;
+using Garage.UI;
 
 namespace Garage
 {
@@ -7,17 +9,11 @@ namespace Garage
     {
         static void Main()
         {
-            Garage<Vehicle> garage = new Garage<Vehicle>(4)
-            {
-                new Car(){ Colour = Colour.Purple , FuelType = FuelType.Diesel},
-                new Boat(){ Length = 3.6 },
-                new Motorcycle(){ CylinderVolume = 3}
-            };
+            GarageHandler<Vehicle> garageHandler = new GarageHandler<Vehicle>();
+            ConsoleUI<Vehicle> consoleUI = new ConsoleUI<Vehicle>(garageHandler);
 
-            foreach (var vehicle in garage)
-            {
-                Console.WriteLine(vehicle);
-            }
+            consoleUI.MainMenu();
+
         }
     }
 }
