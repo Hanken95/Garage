@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace Garage.Handlers
 {
-    internal class GarageHandler<T> where T : Vehicle
+    public class GarageHandler<T> where T : Vehicle
     {
-        private Garage<T> _garage;
-
+        private static Garage<T> _garage;
         public GarageHandler()
         {
             CreateNewGarage();
@@ -22,7 +21,7 @@ namespace Garage.Handlers
         {
             if (createWithCapacityMessage)
             {
-                _garage = new Garage<T>(ConsoleUI<T>.GetUserInputForInt("Enter the capacity for the new Garage: "));
+                _garage = new Garage<T>(ConsoleUI<T>.GetIntInputFromUser("Enter the capacity for the new Garage: "));
             }
             _garage = new Garage<T>(8) { };
         }

@@ -8,18 +8,14 @@ using System.Threading.Tasks;
 
 namespace Garage.UI
 {
-    internal class ConsoleUI<T> where T : Vehicle
+    internal static class ConsoleUI<T> where T : Vehicle
     {
-        private GarageHandler<T> _garageHandler;
+        private static GarageHandler<T> _garageHandler;
 
-        public ConsoleUI(GarageHandler<T> garageHandler)
+
+        public static void MainMenu(GarageHandler<T> garageHandler)
         {
             _garageHandler = garageHandler;
-        }
-
-
-        public void MainMenu()
-        {
             while (true)
             {
                 Console.WriteLine("This is the main menu." +
@@ -64,18 +60,63 @@ namespace Garage.UI
             }
         }
 
-        public static int GetUserInputForInt(string message)
+        public static int GetIntInputFromUser(string message, bool canBeNegative)
         {
             Console.Write(message);
             try
             {
-                return int.Parse(Console.ReadLine());
+                if (canBeNegative)
+                {
+                    return int.Parse(Console.ReadLine());
+                }
+                else
+                {
+                    var value = int.Parse(Console.ReadLine());
+                    if (value < 0)
+                    {
+                        Console.WriteLine("Cannot be negative");
+                        WaitForUserInputToContinue();
+                        return GetIntInputFromUser(message, canBeNegative);
+                    }
+                    return value;
+                }
 
             }
             catch (Exception e)
             {
                 Console.WriteLine("Wrong input. Error: " + e.Message);
-                return GetUserInputForInt(message);
+                WaitForUserInputToContinue();
+                return GetIntInputFromUser(message, canBeNegative);
+            }
+        }
+
+        private static string GetStringInputFromUser(string message)
+        {
+            Console.WriteLine(message);
+            return Console.ReadLine();
+        }
+
+        private static Colour GetColourInputFromUser(string message)
+        {
+            var newMessage = message + "\nAvailable colours are: ";
+            foreach (var colour in Enum.GetNames(typeof(Colour)))
+            {
+                message += colour + " ";
+            }
+            var chosenColour = GetStringInputFromUser(newMessage);
+            if (string.IsNullOrEmpty(chosenColour))
+            {
+                return Colour.Red;
+            }
+            try
+            {
+                return (Colour)Enum.Parse(typeof(Colour), chosenColour);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Wrong input. Error: " + e.Message);
+                WaitForUserInputToContinue();
+                return GetColourInputFromUser(message);
             }
         }
 
@@ -89,35 +130,41 @@ namespace Garage.UI
             }
         }
 
-
-        private void ViewVehicles()
+        private static void ViewVehicles()
         {
             foreach (var vehicleInfo in _garageHandler.GetVehiclesInfo())
             {
                 Console.WriteLine(vehicleInfo);
             }
         }
-        private void ViewVehicleTypesWithCount()
+
+        private static void ViewVehicleTypesWithCount()
         {
             Console.WriteLine(_garageHandler.GetVehicleTypesWithCount());
         }
+        
 
-        private void AddVehicleToGarage()
+        private static void AddVehicleToGarage()
+        {
+            var regNr = GetIntInputFromUser("Enter the registration number for the vehicle", false);
+            Console.Clear();
+            Colour colour = GetColourInputFromUser("Enter the colour for the vehicle");
+            Console.Clear();
+            var wheels = GetIntInputFromUser("Enter how many wheels the car has", false);
+        }
+
+
+        private static void RemoveVehicleFromGarage()
         {
             throw new NotImplementedException();
         }
 
-        private void RemoveVehicleFromGarage()
+        private static void FindVehiclesBasedOnProperties()
         {
             throw new NotImplementedException();
         }
 
-        private void FindVehiclesBasedOnProperties()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void CreateNewGarage()
+        private static void CreateNewGarage()
         {
             throw new NotImplementedException();
         }
