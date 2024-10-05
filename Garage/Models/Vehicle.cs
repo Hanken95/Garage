@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Garage.Models.Vehicles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace Garage.Models
         Orange,
         Black
     }
-    public abstract class Vehicle
+    public abstract class Vehicle : IVehicle
     {
         public int RegistrationNumber { get; set; } = 999;
         public Colour Colour { get; set; }

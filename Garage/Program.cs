@@ -9,7 +9,7 @@ namespace Garage
     {
         static void Main()
         {
-            ConsoleUI<Vehicle>.MainMenu(new GarageHandler<Vehicle>());
+            ConsoleUI.MainMenu(new GarageHandler());
         }
     }
 }

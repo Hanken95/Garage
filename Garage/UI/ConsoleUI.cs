@@ -1,5 +1,6 @@
 ﻿using Garage.Handlers;
 using Garage.Models;
+using Garage.Models.Vehicles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +9,11 @@ using System.Threading.Tasks;
 
 namespace Garage.UI
 {
-    internal static class ConsoleUI<T> where T : Vehicle
+    internal class ConsoleUI : IUI
     {
-        private static GarageHandler<T> _garageHandler;
+        private static GarageHandler _garageHandler;
 
-
-        public static void MainMenu(GarageHandler<T> garageHandler)
+        public static void MainMenu(GarageHandler garageHandler)
         {
             _garageHandler = garageHandler;
             while (true)
@@ -89,11 +89,51 @@ namespace Garage.UI
                 return GetIntInputFromUser(message, canBeNegative);
             }
         }
+        public static double GetDoubleInputFromUser(string message, bool canBeNegative)
+        {
+            Console.Write(message);
+            try
+            {
+                if (canBeNegative)
+                {
+                    return double.Parse(Console.ReadLine());
+                }
+                else
+                {
+                    var value = double.Parse(Console.ReadLine());
+                    if (value < 0)
+                    {
+                        Console.WriteLine("Cannot be negative");
+                        WaitForUserInputToContinue();
+                        return GetDoubleInputFromUser(message, canBeNegative);
+                    }
+                    return value;
+                }
 
-        private static string GetStringInputFromUser(string message)
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Wrong input. Error: " + e.Message);
+                WaitForUserInputToContinue();
+                return GetDoubleInputFromUser(message, canBeNegative);
+            }
+        }
+
+        private static string GetStringInputFromUser(string message, bool vehicleTypeSelection = false)
         {
             Console.WriteLine(message);
-            return Console.ReadLine();
+            if (!vehicleTypeSelection)
+            {
+                return Console.ReadLine();
+            }
+            var input = Console.ReadLine().ToLower();
+            if (input == "boat" || input == "car" || input == "motorcycle")
+            {
+                return input;
+            }
+            Console.WriteLine("Wrong input, can only be the available vehicles.");
+            WaitForUserInputToContinue();
+            return GetStringInputFromUser(message, vehicleTypeSelection);
         }
 
         private static Colour GetColourInputFromUser(string message)
@@ -101,7 +141,7 @@ namespace Garage.UI
             var newMessage = message + "\nAvailable colours are: ";
             foreach (var colour in Enum.GetNames(typeof(Colour)))
             {
-                message += colour + " ";
+                newMessage += colour + " ";
             }
             var chosenColour = GetStringInputFromUser(newMessage);
             if (string.IsNullOrEmpty(chosenColour))
@@ -117,6 +157,29 @@ namespace Garage.UI
                 Console.WriteLine("Wrong input. Error: " + e.Message);
                 WaitForUserInputToContinue();
                 return GetColourInputFromUser(message);
+            }
+        }
+        private static FuelType GetFuelTypeInputFromUser(string message)
+        {
+            var newMessage = message + "\nAvailable fuel types are: ";
+            foreach (var colour in Enum.GetNames(typeof(FuelType)))
+            {
+                newMessage += colour + " ";
+            }
+            var chosenColour = GetStringInputFromUser(newMessage);
+            if (string.IsNullOrEmpty(chosenColour))
+            {
+                return FuelType.Petrol;
+            }
+            try
+            {
+                return (FuelType)Enum.Parse(typeof(FuelType), chosenColour);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Wrong input. Error: " + e.Message);
+                WaitForUserInputToContinue();
+                return GetFuelTypeInputFromUser(message);
             }
         }
 
@@ -143,20 +206,51 @@ namespace Garage.UI
             Console.WriteLine(_garageHandler.GetVehicleTypesWithCount());
         }
         
-
         private static void AddVehicleToGarage()
         {
+            var vehicleType = GetStringInputFromUser("Choose vehicle type. Vehicles available: Car,Boat, Motorcycle", true);
+            Console.Clear();
             var regNr = GetIntInputFromUser("Enter the registration number for the vehicle", false);
             Console.Clear();
-            Colour colour = GetColourInputFromUser("Enter the colour for the vehicle");
+            Colour colour = GetColourInputFromUser("Enter the colour for the vehicle, if you enter nothing then red will be chosen");
             Console.Clear();
-            var wheels = GetIntInputFromUser("Enter how many wheels the car has", false);
+            var wheels = GetIntInputFromUser("Enter how many wheels the vehicle has", false);
+            bool vehicleAdded = false;
+            if (vehicleType == "boat")
+            {
+                vehicleAdded = _garageHandler.AddVehicleToGarage(regNr, colour, wheels, length: GetDoubleInputFromUser("Enter the length for the boat", false));
+            }
+            else if (vehicleType == "car")
+            {
+                vehicleAdded = _garageHandler.AddVehicleToGarage(regNr, colour, wheels, fuelType: GetFuelTypeInputFromUser("Enter the fuel type for the car. If you enter nothing then petrol will be chosen"));
+            }
+            else if (vehicleType == "motorcycle")
+            {
+                vehicleAdded = _garageHandler.AddVehicleToGarage(regNr, colour, wheels, cylinderVolume: GetDoubleInputFromUser("Enter the cylinder volume for the motorcycle.", false));
+            }
+            else
+            {
+                throw new Exception("You managed to break the garage by entering a incorrect vehicle type.");
+            }
+            Console.Clear();
+            if (vehicleAdded)
+            {
+                Console.WriteLine("Vehicle successfully added.");
+            }
+            else
+            {
+                Console.WriteLine("Vehicle was not succeffully added.");
+            }
         }
-
 
         private static void RemoveVehicleFromGarage()
         {
-            throw new NotImplementedException();
+            int regNr = GetIntInputFromUser("Enter the registration number of the vehicle to be removed", false);
+
+            if (_garageHandler.RemoveVehicleFromGarage(regNr))
+            {
+                
+            }
         }
 
         private static void FindVehiclesBasedOnProperties()

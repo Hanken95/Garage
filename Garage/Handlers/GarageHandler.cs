@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Garage.Handlers
 {
-    public class GarageHandler<T> where T : Vehicle
+    public class GarageHandler
     {
-        private static Garage<T> _garage;
+        private Garage<IVehicle> _garage;
         public GarageHandler()
         {
             CreateNewGarage();
@@ -21,18 +21,39 @@ namespace Garage.Handlers
         {
             if (createWithCapacityMessage)
             {
-                _garage = new Garage<T>(ConsoleUI<T>.GetIntInputFromUser("Enter the capacity for the new Garage: "));
+                _garage = new Garage<IVehicle>(ConsoleUI.GetIntInputFromUser("Enter the capacity for the new Garage: ", false));
             }
-            _garage = new Garage<T>(8) { };
+            _garage = new Garage<IVehicle>(8) { };
         }
 
-        public void AddVehicleToGarage(T vehicle)
+        public bool AddVehicleToGarage(IVehicle vehicle)
         {
-            _garage.Add(vehicle);
+            return _garage.Add(vehicle);
         }
-        public void RemoveVehicleToGarage(T vehicle)
+        public bool AddVehicleToGarage(int registrationNumber, Colour colour, int wheels, double? length = null, FuelType? fuelType = null, double? cylinderVolume = null)
         {
-            _garage.Remove(vehicle);
+            return _garage.Add(CreateVehicle(registrationNumber, colour, wheels, length,  fuelType, cylinderVolume));
+        }
+
+        public IVehicle CreateVehicle(int registrationNumber, Colour colour, int wheels, double? length = null, FuelType? fuelType = null, double? cylinderVolume = null)
+        {
+            if (length != null)
+            {
+                return new Boat() { RegistrationNumber = registrationNumber, Colour = colour, Wheels = wheels, Length = (double)length};
+            }
+            if (fuelType != null)
+            {
+                return new Car() { RegistrationNumber = registrationNumber, Colour = colour, Wheels = wheels, FuelType = (FuelType)fuelType};
+            }
+            if (cylinderVolume != null)
+            {
+                return new Motorcycle() { RegistrationNumber = registrationNumber, Colour = colour, Wheels = wheels, CylinderVolume = (double)cylinderVolume};
+            }
+            throw new Exception("Vehicle not implemented");
+        }
+        public bool RemoveVehicleFromGarage(int regNr)
+        {
+            return _garage.Remove(regNr);
         }
         public List<string> GetVehiclesInfo()
         {

@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 
 namespace Garage.Models
 {
-    public class Garage<T>: IEnumerable<T> where T : Vehicle
+    public class Garage<T>: IEnumerable<T> where T : IVehicle
     {
 
-        private T[] vehicles;
+        private T[] _vehicles;
 
         /// <summary>
         /// Returns how many vehicles can be stored in the garage
         /// </summary>
         public int Capacity
         {
-            get { return vehicles.Length; }
+            get { return _vehicles.Length; }
         }
 
         public T this[int index]
         {
-            get { return vehicles[index]; }
+            get { return _vehicles[index]; }
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Garage.Models
             get 
             {
                 int count = 0;
-                foreach (T vehicle in vehicles)
+                foreach (T vehicle in _vehicles)
                 {
                     if (vehicle != null)
                     {
@@ -49,7 +49,7 @@ namespace Garage.Models
 
         public Garage(int capacity)
         {
-            vehicles = new T[capacity];
+            _vehicles = new T[capacity];
         }
 
         /// <summary>
@@ -59,21 +59,46 @@ namespace Garage.Models
         /// <returns>Returns true if the car was stored, returns false if not.</returns>
         public bool Add(T vehicle)
         {
-            if (vehicles.Contains(vehicle))
+            if (Count >= Capacity || _vehicles.Contains(vehicle))
             {
                 return false;
             }
-            else if (Capacity > Count)
-            {
+            //if (_vehicles.GetType() == typeof(vehicle))
+            //{
                 for (int i = 0; i < Capacity; i++)
                 {
-                    if (vehicles[i] == null)
+                    if (_vehicles[i] == null)
                     {
-                        vehicles[i] = vehicle;
+                        _vehicles[i] = vehicle;
                         return true;
                     }
                 }
-            }
+            //}
+            //if (_vehicles.GetType() != vehicle.GetType())
+            //{
+            //    return false;
+            //}
+            //switch (_vehicles)
+            //{
+            //    case Boat a:
+                    
+                    
+                        
+            //        for (int i = 0; i < Capacity; i++)
+            //        {
+            //            if (_vehicles[i] == null)
+            //            {
+            //                _vehicles[i] = b;
+            //                return true;
+            //            }
+            //        }
+                         
+                    
+            //        break;
+            //    default:
+            //        break;
+            //}
+
 
             return false;
         }
@@ -85,9 +110,19 @@ namespace Garage.Models
         /// <returns>Returns true if the car was removed, returns false if not.</returns>
         public bool Remove(T vehicle)
         {
-            if(vehicles.Contains(vehicle))
+            if(_vehicles.Contains(vehicle))
             {
-                vehicle = null;
+                vehicle = default;
+                return true;
+            }
+            return false;
+        }
+        public bool Remove(int regNumber)
+        {
+            var matches = _vehicles.Where(vehicles => vehicles.RegistrationNumber == regNumber).ToArray();
+            if (matches.Count() > 0)
+            {
+                matches[0] = default;
                 return true;
             }
             return false;

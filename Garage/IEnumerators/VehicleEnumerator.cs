@@ -1,4 +1,5 @@
 ﻿using Garage.Models;
+using Garage.Models.Vehicles;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Garage.IEnumerators
 {
-    internal class VehicleEnumerator<T> : IEnumerator<T> where T : Vehicle
+    internal class VehicleEnumerator<T> : IEnumerator<T> where T : IVehicle
     {
         private Garage<T> _garage;
         private int _index;
