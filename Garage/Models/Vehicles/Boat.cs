@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Garage.Models.Vehicles
 {
-    internal class Boat : Vehicle
+    public class Boat : Vehicle
     {
         /// <summary>
         /// Length in meters

@@ -22,10 +22,6 @@ namespace Garage.Models
             get { return _vehicles.Length; }
         }
 
-        public T this[int index]
-        {
-            get { return _vehicles[index]; }
-        }
 
         /// <summary>
         /// Returns how many vehicles are in the garage currently
@@ -45,7 +41,12 @@ namespace Garage.Models
                 return count;
             }
         }
+        public T this[int index]
+        {
+            get { return _vehicles[index]; }
+        }
 
+        public bool IsFull { get { return Capacity <= Count; } }
 
         public Garage(int capacity)
         {
@@ -119,11 +120,13 @@ namespace Garage.Models
         }
         public bool Remove(int regNumber)
         {
-            var matches = _vehicles.Where(vehicles => vehicles.RegistrationNumber == regNumber).ToArray();
-            if (matches.Count() > 0)
+            for (int i = 0; i < Count; i++)
             {
-                matches[0] = default;
-                return true;
+                if (_vehicles[i] != null && _vehicles[i].RegistrationNumber == regNumber)
+                {
+                    _vehicles[i] = default;
+                    return true;
+                }
             }
             return false;
         }
@@ -136,6 +139,14 @@ namespace Garage.Models
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < Capacity; i++)
+            {
+                _vehicles[i] = default;
+            }
         }
     }
 }

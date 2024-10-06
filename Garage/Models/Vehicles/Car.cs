@@ -14,7 +14,7 @@ namespace Garage.Models.Vehicles
         Ethanol
     }
 
-    internal class Car : Vehicle
+    public class Car : Vehicle
     {
         public FuelType FuelType { get; set; }
 
